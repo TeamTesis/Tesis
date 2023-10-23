@@ -34,18 +34,7 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="grid grid-cols-12 gap-5">
-        <div className="lg:col-span-8 col-span-12">
-          <Card>
-            <div className="legend-ring">
-              <RevenueBarChart />
-            </div>
-          </Card>
-        </div>
-        <div className="lg:col-span-4 col-span-12">
-          <Card title="Overview" headerslot={<SelectMonth />}>
-            <RadialsChart />
-          </Card>
-        </div>
+        
         <div className="lg:col-span-12 col-span-12">
           <Card title="Unidades" headerslot={<SelectMonth />} noborder>
             <Unidadestable />

@@ -1,0 +1,47 @@
+else if (isLastStep) {
+      console.log(data);
+      const res = await axios.put("/api/products/" + params.id, product);
+      console.log(res);
+      setTimeout(() => {
+        router.push("/unidades");
+      }, 1500);
+      toast.success("Unidad Guardada con exito", {
+        position: "top-right",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      setStepNumber(stepNumber + 1);
+    }
+
+---------------------------------------------------------
+
+     const onSubmit = (data) => {
+    // next step until last step . if last step then submit form
+    let totalSteps = steps.length;
+    const isLastStep = stepNumber === totalSteps - 2;
+    if (isLastStep) {
+      console.log(data);
+
+      setTimeout(() => {
+        router.push("/unidades");
+      }, 1500);
+      toast.success("Unidad Guardada con exito", {
+        position: "top-right",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      setStepNumber(stepNumber + 1);
+    }
+  };

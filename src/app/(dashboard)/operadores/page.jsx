@@ -2,7 +2,6 @@
 import React from 'react'
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
-import TableOperadores from '@/components/partials/table/TablaOperadores';
 import TablaOperadores from '@/components/partials/table/TablaOperadores';
 
 const Unidades = () => {
@@ -40,7 +39,7 @@ const Unidades = () => {
               className=" btn-dark font-normal btn-sm "
               iconClass="text-lg"
               onClick={() => {
-                router.push("/Agregar-Operador");
+                router.push("/operadores/agregar-operador");
               }}
             />
             </div>

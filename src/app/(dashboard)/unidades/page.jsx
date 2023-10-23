@@ -1,35 +1,12 @@
-"use client";
-import React from 'react'
+'use client'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Make sure axios is imported if you're using it for HTTP requests
 import TablaUnidades from "@/components/partials/table/TablaUnidades";
 import Button from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // T
 
-const Unidades = () => {
+function Unidades() {
     const router = useRouter();
-    const actions = [
-
-        {
-            name: "view",
-            icon: "heroicons-outline:eye",
-            doit: () => {
-                router.push("/unidad-preview");
-            },
-        },
-        {
-            name: "edit",
-            icon: "heroicons:pencil-square",
-            doit: (id) => {
-                router.push("/invoice-edit");
-            },
-        },
-        {
-            name: "delete",
-            icon: "heroicons-outline:trash",
-            doit: (id) => {
-                return null;
-            },
-        },
-    ];
     return (
         <div>
             <div className="py-3">
@@ -39,12 +16,12 @@ const Unidades = () => {
               className=" btn-dark font-normal btn-sm "
               iconClass="text-lg"
               onClick={() => {
-                router.push("/Agregar-Unidad");
+                router.push("unidades/agregar_unidad");
               }}
             />
             </div>
             <div className=" space-y-5">
-                <TablaUnidades />
+                <TablaUnidades/>
             </div>
 
         </div>

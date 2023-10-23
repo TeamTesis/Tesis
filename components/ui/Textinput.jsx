@@ -5,6 +5,7 @@ import "cleave.js/dist/addons/cleave-phone.us";
 const Textinput = ({
   type,
   label,
+  pattern, 
   placeholder = "Add placeholder",
   classLabel = "form-label",
   className = "",
@@ -57,6 +58,7 @@ const Textinput = ({
             type={type === "password" && open === true ? "text" : type}
             {...register(name)}
             {...rest}
+            pattern={pattern}
             className={`${
               error ? " has-error" : " "
             } form-control py-2 ${className}  `}

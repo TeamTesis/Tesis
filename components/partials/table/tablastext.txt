@@ -26,13 +26,13 @@ const COLUMNS = [
   },
   {
     Header: "Operador",
-    accessor: "operador",
+    accessor: "id_operador",
     Cell: (row) => {
       return (
         <div>
           <span className="inline-flex items-center">
             <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">
-              {row?.cell?.value}
+              {row?.cell?.value.name}
             </span>
           </span>
         </div>
@@ -84,25 +84,25 @@ const COLUMNS = [
     },
   },
   {
-    Header: "Status",
+    Header: "status",
     accessor: "is_active",
     Cell: (row) => {
       return (
-        <span className="block w-full items-center">
+        <span className="block w-full">
           <span
             className={` inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 ${
-              row?.cell?.value === 1
+              row?.cell?.value === "1"
                 ? "text-success-500 bg-success-500"
                 : ""
             } 
             ${
-              row?.cell?.value === 0
+              row?.cell?.value === "0"
                 ? "text-warning-500 bg-danger-500"
                 : ""
             }
              `}
           >
-            {row?.cell?.value === 1 ? "Encendido" : "Apagado"}
+            {row?.cell?.value}
           </span>
         </span>
       );
@@ -197,8 +197,8 @@ const TablaUnidades = ({ title = "Unidades" }) => {
     async function LoadUnidades() {
       try {
         const response = await axios.get("http://localhost:3000/api/camiones");
-        setTrucks(response.data); // Setting the state will cause component to re-render
-        console.log(response.data);
+        setTrucks(response); // Setting the state will cause component to re-render
+        console.log(response);
       } catch (error) {
         console.error("Ha ocurrido un error al cargar las unidades: ", error);
         // Handle your error here according to your application's requirements
@@ -208,8 +208,7 @@ const TablaUnidades = ({ title = "Unidades" }) => {
   }, []);
 
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => trucks, [trucks]); // Asegúrate de que trucks es un array
-
+  const data = useMemo(() => trucks, []);
 
   const tableInstance = useTable(
     {

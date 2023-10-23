@@ -1,5 +1,6 @@
+'use client'
 import { Menu, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 

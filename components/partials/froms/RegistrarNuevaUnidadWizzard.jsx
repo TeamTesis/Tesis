@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React, { useRef, useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Textinput from "@/components/ui/Textinput";
-import InputGroup from "@/components/ui/InputGroup";
-import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
-import Select from "@/components/ui/Select";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
+import Select from "react-select";
+import axios from 'axios';
+
+const styles = {
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: "14px",
+  }),
+};
 
 const steps = [
   {
@@ -20,7 +26,7 @@ const steps = [
   },
   {
     id: 2,
-    title: "Configuracion de Dispositivo",
+    title: "Perosonalizacion de Unidad",
   },
   ,
 ];
@@ -69,63 +75,115 @@ const options = [
 ];
 const operadores = [
   {
-    value: "operador1",
+    value: "1",
     label: "Juan Pérez",
   },
   {
-    value: "operador2",
+    value: "2",
     label: "Carlos García",
   },
   {
-    value: "operador3",
+    value: "3",
     label: "Luis Hernández",
   },
   {
-    value: "operador4",
+    value: "4",
     label: "Miguel González",
   },
   {
-    value: "operador5",
+    value: "5",
     label: "Roberto Martínez",
   },
   {
-    value: "operador6",
+    value: "6",
     label: "Ricardo Sánchez",
   },
   {
-    value: "operador7",
+    value: "7",
     label: "Pedro Ramírez",
   },
   {
-    value: "operador8",
+    value: "8",
     label: "Alejandro Torres",
   },
   {
-    value: "operador9",
+    value: "9",
     label: "Jorge Guerrero",
   },
   {
-    value: "operador10",
+    value: "10",
     label: "Fernando Guzmán",
   },
 ];
 
+const years = [];
 
+for (let year = 1990; year <= 2023; year++) {
+  years.push({ value: year, label: String(year) });
+}
 
 let stepSchema = yup.object().shape({
   placa: yup.string().required("La placa de la unidad es requerida"),
-  numeroeco: yup.string().required("El numero economico de la unidad es requerido"),
+  eco: yup.string().required("El numero economico de la unidad es requerido"),
 });
 
 let personalSchema = yup.object().shape({
   codigoDispositivo: yup.string().required("Ingrese el codigo del dispositivo"),
 });
 
-
-
 const FormWizard = () => {
+  const form = useRef(null);
   const router = useRouter();
+  const params = useParams();
+
+  const [trucks, setTrucks] = useState({
+    placa: "",
+    eco: "",
+    nombre_camion: "",
+    marca: "",
+    modelo: "",
+    year: "",
+    nombre_operador: "",
+  });
+
   const [stepNumber, setStepNumber] = useState(0);
+
+  //Aqui usamos el paramas que es el parametro que viene de la url y si existe, entonces llenamos la constante trucks con los datos del objeto.
+  useEffect(() => {
+    if (params.id) {
+      axios.get("/api/camiones/" + params.id).then((res) => {
+        setProduct({
+          placa: res.data.placa,
+          eco: res.data.eco,
+          nombre_camion: res.data.nombre_camion,
+          marca: res.data.marca,
+          modelo: res.data.modelo,
+          year: res.data.year,
+          nombre_operador: res.data.nombre_operador,
+        });
+      });
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    // Actualiza el estado de trucks basado en el nombre del input y su valor.
+    setTrucks({
+      ...trucks,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleChangeSelect = (selectedOption, actionMeta) => {
+    console.log(selectedOption); // Aquí puedes ver la opción seleccionada en la consola.
+    const fieldName = actionMeta.name; // Esto obtiene el nombre del campo.
+
+    // Actualiza el estado de 'trucks' basado en el nombre del campo y su valor.
+    setTrucks({
+      ...trucks,
+      [fieldName]: selectedOption.value, // Aquí asumimos que quieres guardar solo el valor.
+    });
+  };
 
   // find current step schema
   let currentStepSchema;
@@ -146,7 +204,6 @@ const FormWizard = () => {
   const {
     register,
     formState: { errors },
-    handleSubmit,
     watch,
   } = useForm({
     resolver: yupResolver(currentStepSchema),
@@ -154,90 +211,91 @@ const FormWizard = () => {
     mode: "all",
   });
 
-  const onSubmit = (data) => {
-    // next step until last step . if last step then submit form
-    let totalSteps = steps.length;
-    const isLastStep = stepNumber === totalSteps - 2;
-    if (isLastStep) {
-      console.log(data);
-      setTimeout(() => {
-        router.push("/unidades");
-      }, 1500);
-      toast.success("Unidad Guardada con exito", {
-        position: "top-right",
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      setStepNumber(stepNumber + 1);
+  // Define una función llamada handleSubmit que se ejecutará cuando se envíe el formulario.
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Previene la recarga de la página al enviar el formulario.
+
+    try {
+      let response; // Esta variable almacenará la respuesta de la solicitud.
+
+      if (!params.id) {
+        // Si params.id no existe, estamos en modo creación y hacemos una solicitud POST.
+        response = await axios.post("/api/camiones", trucks);
+
+        // Si la solicitud fue exitosa, mostramos una notificación de éxito.
+        if (response.status === 201) {
+          // El código 201 indica que se ha creado un nuevo recurso.
+          toast.success("Unidad creada con éxito!", {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          // Después de un tiempo de espera, redirige al usuario y refresca la página.
+          setTimeout(() => {
+            router.push("/unidades"); // Redirige al usuario a la página de 'unidades'.
+            router.refresh(); // Refresca la página actual.
+          }, 1500);
+        }
+      } else {
+        // Si params.id existe, estamos en modo edición y hacemos una solicitud PUT.
+        response = await axios.put(`/api/camiones/${params.id}`, trucks);
+
+        // Si la solicitud fue exitosa, mostramos una notificación de éxito.
+        if (response.status === 200) {
+          toast.success("Unidad actualizada con éxito!", {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+
+          // Aquí también puedes redirigir o refrescar la página si es necesario después de actualizar.
+          setTimeout(() => {
+            router.push("/unidades"); // Redirige al usuario a la página de 'unidades'.
+            router.refresh(); // Refresca la página actual.
+          }, 1500);
+        }
+      }
+
+      console.log(response); // Imprime la respuesta en consola.
+    } catch (error) {
+      // Si ocurre un error en la solicitud, capturamos el error y mostramos una notificación de error.
+      console.error("Hubo un error al enviar los datos: ", error);
+      toast.error(
+        "Error al procesar la unidad. Por favor, inténtelo de nuevo.",
+        {
+          position: "top-right",
+          autoClose: 3000, // Puede ajustar el tiempo antes de que la notificación se cierre automáticamente.
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   };
+
 
   const handlePrev = () => {
     setStepNumber(stepNumber - 1);
   };
 
-  const [value, setValue] = useState("");
-  const [value2, setValue2] = useState("");
-
-  const handleChange = (e) => {
-    setValue(e.target.value);
-  };
-  const handleChange2 = (e) => {
-    setValue2(e.target.value);
-  };
-
   return (
     <div>
       <Card title="Agregar Nueva Unidad">
-        <div>
-          <div className="flex z-[5] items-center relative justify-center md:mx-8">
-            {steps.map((item, i) => (
-              <div
-                className="relative z-[1] items-center item flex flex-start flex-1 last:flex-none group"
-                key={i}
-              >
-                <div
-                  className={`${stepNumber >= i
-                    ? "bg-slate-900 text-white ring-slate-900 ring-offset-2 dark:ring-offset-slate-500 dark:bg-slate-900 dark:ring-slate-900"
-                    : "bg-white ring-slate-900 ring-opacity-70  text-slate-900 dark:text-slate-300 dark:bg-slate-600 dark:ring-slate-600 text-opacity-70"
-                    }  transition duration-150 icon-box md:h-12 md:w-12 h-7 w-7 rounded-full flex flex-col items-center justify-center relative z-[66] ring-1 md:text-lg text-base font-medium`}
-                >
-                  {stepNumber <= i ? (
-                    <span> {i + 1}</span>
-                  ) : (
-                    <span className="text-3xl">
-                      <Icon icon="bx:check-double" />
-                    </span>
-                  )}
-                </div>
-
-                <div
-                  className={`${stepNumber >= i
-                    ? "bg-slate-900 dark:bg-slate-900"
-                    : "bg-[#E0EAFF] dark:bg-slate-700"
-                    } absolute top-1/2 h-[2px] w-full`}
-                ></div>
-                <div
-                  className={` ${stepNumber >= i
-                    ? " text-slate-900 dark:text-slate-300"
-                    : "text-slate-500 dark:text-slate-300 dark:text-opacity-40"
-                    } absolute top-full text-base md:leading-6 mt-3 transition duration-150 md:opacity-100 opacity-0 group-hover:opacity-100`}
-                >
-                  <span className="w-max">{item.title}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
           <div className="conten-box ">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {stepNumber === 0 && (
+            <form onSubmit={handleSubmit} ref={form}>
                 <div>
                   <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 pt-10">
                     <div className="lg:col-span-3 md:col-span-2 col-span-1">
@@ -248,84 +306,101 @@ const FormWizard = () => {
                     <Textinput
                       label="Placa"
                       type="text"
-                      placeholder="43-JKE-23"
+                      placeholder="43JKE23"
                       name="placa"
                       error={errors.placa}
+                      onChange={handleChange} // Asigna la función handleChange al evento onChange.
                       register={register}
                     />
                     <Textinput
                       label="Numero economico"
-                      type="text"
+                      type="text" // Cambiado a 'text' para que puedas usar el atributo 'pattern'. Si usas 'number', algunos navegadores permiten caracteres como 'e' y '-'.
                       placeholder="93"
-                      name="numeroeco"
-                      error={errors.numeroeco}
+                      name="eco"
+                      error={errors.eco}
+                      onChange={handleChange}
                       register={register}
+                      pattern="\d*" // Esta expresión regular significa "permitir solo dígitos"
                     />
                     <Textinput
                       label="Nombre de la Unidad"
                       type="text"
-                      placeholder=""
-                      name="nombreoperador"
+                      placeholder="Ingrese el nombre o identificador de la unidad"
+                      name="nombre_camion"
+                      onChange={handleChange} // Asigna la función handleChange al evento onChange.
                       register={register}
                     />
-                    <Select
-                      label="Marca"
-                      placeholder="Seleccione la marca de la unidad"
-                      options={options}
-                      onChange={handleChange}
-                      value={value}
-                    />
-                    <Select
-                      label="Operador"
-                      placeholder="Seleccione el operador de la unidad"
-                      options={operadores}
-                      onChange={handleChange2}
-                      value={value2}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {stepNumber === 1 && (
-                <div>
-                  <div className="grid md:grid-cols-1 grid-cols-1 gap-5">
-                    <div className="md:col-span-2 col-span-1 mt-8">
-                      <h4 className="text-base text-slate-800 dark:text-slate-300 my-6">
-                        Nuevo despositivo
-                      </h4>
-                    </div>
                     <Textinput
-                      label="Codigo del dispositivo"
+                      label="Modelo de la unidad"
                       type="text"
-                      className="text-center"
-                      placeholder="0000-0000-0000"
-                      name="codigoDispositivo"
-                      error={errors.codigoDispositivo}
+                      placeholder="Ingrese el modelo de la unidad"
+                      name="modelo"
+                      onChange={handleChange} // Asigna la función handleChange al evento onChange.
                       register={register}
                     />
+
+                    <div>
+                      <label htmlFor="hh0" className="form-label ">
+                        Año
+                      </label>
+                      <Select
+                        id="hh0"
+                        label="Year"
+                        placeholder="Seleccione el año de la unidad"
+                        name="year"
+                        className="react-select"
+                        classNamePrefix="select"
+                        onChange={handleChangeSelect} // aquí pasamos la nueva función
+                        options={years}
+                        styles={styles}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="hh1" className="form-label ">
+                        Marca
+                      </label>
+                      <Select
+                        id="hh1"
+                        label="Marca"
+                        placeholder="Seleccione la marca de la unidad"
+                        name="marca"
+                        className="react-select"
+                        classNamePrefix="select"
+                        options={options}
+                        onChange={handleChangeSelect} // aquí pasamos la nueva función
+                        styles={styles}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor=" hh2" className="form-label ">
+                        Operador
+                      </label>
+                      <Select
+                        id="hh2"
+                        placeholder="Seleccione el operador de la unidad"
+                        name="nombre_operador"
+                        className="react-select"
+                        classNamePrefix="select"
+                        options={operadores}
+                        onChange={handleChangeSelect} // aquí pasamos la nueva función
+                        styles={styles}
+                      />
+                    </div>
                   </div>
                 </div>
-              )}
-              <div
-                className={`${stepNumber > 0 ? "flex justify-between" : " text-right"
-                  } mt-10`}
-              >
-                {stepNumber !== 0 && (
-                  <Button
-                    text="Regresar"
-                    className="btn-dark"
-                    onClick={handlePrev}
-                  />
-                )}
+              
                 <Button
-                  text={stepNumber !== steps.length - 2 ? "Siguiente" : "Guardar"}
+                  text={
+                    stepNumber !== steps.length - 2 ? "Siguiente" : "Guardar"
+                  }
                   className="btn-dark"
                   type="submit"
                 />
               </div>
             </form>
           </div>
-        </div>
       </Card>
     </div>
   );
