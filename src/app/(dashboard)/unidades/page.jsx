@@ -1,9 +1,7 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Make sure axios is imported if you're using it for HTTP requests
+"use client"
 import TablaUnidades from "@/components/partials/table/TablaUnidades";
 import Button from "@/components/ui/Button";
-import { useRouter } from "next/navigation"; // T
+import { useRouter } from "next/navigation"; 
 
 function Unidades() {
     const router = useRouter();
@@ -16,7 +14,7 @@ function Unidades() {
               className=" btn-dark font-normal btn-sm "
               iconClass="text-lg"
               onClick={() => {
-                router.push("unidades/agregar_unidad");
+                router.push("unidades/agregar-unidad");
               }}
             />
             </div>

@@ -52,6 +52,14 @@ const Profile = () => {
       },
     },
     {
+      label: "Agregar usuario",
+      icon: "heroicons-outline:user-plus",
+
+      action: () => {
+        router.push("/usuarios");
+      },
+    },
+    {
       label: "Faq",
       icon: "heroicons-outline:information-circle",
       action: () => {

@@ -3,7 +3,7 @@ import { conn } from "src/libs/db"
 
 export async function GET() {
     try {
-      const query = "SELECT * FROM operators where is_active = 1"
+      const query = "SELECT * FROM users where is_active = 1 and id = ?" 
       const results = await conn.query(query);
       return NextResponse.json(results);
     } catch (error) {
@@ -21,12 +21,8 @@ export async function GET() {
 export async function POST(request) {
     try {
       const { nombre_completo, telefono, telefono_2 ,rfc} = await request.json();
-      const result = await conn.query("INSERT INTO operators SET ?", {
-        nombre_completo,
-        telefono,
-        telefono_2,
-        rfc,
-        is_active: 1,
+      const result = await conn.query("INSERT INTO users SET ?", {
+      
       });
   
       return NextResponse.json({
