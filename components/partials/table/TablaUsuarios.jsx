@@ -53,7 +53,7 @@ const actions = [
   },
 ];
 
-const TablaOperadores = ({ title = "Operadores" }) => {
+const TablaUsuarios = ({ title = "Usuarios" }) => {
 
   const COLUMNS = [
     {
@@ -125,7 +125,7 @@ const TablaOperadores = ({ title = "Operadores" }) => {
                         if (item.name === "delete") {
                           // Aquí puedes manejar lógica adicional si es necesario para 'delete', como confirmaciones
                           if (confirm("¿Estas seguro de eliminar esta unidad?")) {
-                            const res = await axios.put("/api/operadores/" + row?.cell?.value , {
+                            const res = await axios.put("/api/usuarios/" + row?.cell?.value , {
                               action : "restore"
                             });
                             console.log(res);
@@ -142,14 +142,14 @@ const TablaOperadores = ({ title = "Operadores" }) => {
                                 theme: "light",
                               });
                               setTimeout(() => {
-                                LoadOperadores();
+                                LoadUsuarios();
                               }, 1500);
                             }
                           }
                         }
                         // Asume que `row.original.id` es el ID de tu fila actual. Cambia según tu estructura de datos.
                         if (item.name === "edit"){
-                          router.push("/operadores/editar-operador/" + row?.cell?.value); // esto navega a la ruta deseada
+                          router.push("/usuarios/editar-operador/" + row?.cell?.value); // esto navega a la ruta deseada
                         }
                         
                       }
@@ -171,15 +171,15 @@ const TablaOperadores = ({ title = "Operadores" }) => {
   ];
 
   const router = useRouter();
-  const [operadores, setOperadores] = useState([]); // Set initial state to an empty array
+  const [usuarios, setUsuarios] = useState([]); // Set initial state to an empty array
  
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => operadores, [operadores]);
+  const data = useMemo(() => usuarios, [usuarios]);
 
-    const LoadOperadores = async () => {
+    const LoadUsuarios = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/operadores");
-        setOperadores(response.data); // Setting the state will cause component to re-render
+        const response = await axios.get("http://localhost:3000/api/usuarios");
+        setUsuarios(response.data); // Setting the state will cause component to re-render
         console.log(response.data);
       } catch (error) {
         console.error("Ha ocurrido un error al cargar las unidades: ", error);
@@ -189,7 +189,7 @@ const TablaOperadores = ({ title = "Operadores" }) => {
 
     
     useEffect(() => { 
-      LoadOperadores();
+      LoadUsuarios();
     }, []); // Only re-run the effect if count changes
 
   const tableInstance = useTable(
@@ -363,4 +363,4 @@ const TablaOperadores = ({ title = "Operadores" }) => {
   );
 };
 
-export default TablaOperadores;
+export default TablaUsuarios;

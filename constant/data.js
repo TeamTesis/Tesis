@@ -18,12 +18,6 @@ export const menuItems = [
     link: "/operadores",
   },
   {
-    title: "Mapa",
-    isHide: true,
-    icon: "heroicons-outline:map-pin",
-    link: "/map",
-  },
-  {
     title: "KPI´s",
     isHide: true,
     icon: "heroicons-outline:chart-bar",
