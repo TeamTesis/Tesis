@@ -7,22 +7,15 @@ export async function GET() {
   try {
     // Realizamos la consulta con un JOIN para obtener datos de ambas tablas.
     const query = `
-      SELECT trucks.*, operators.nombre, operators.apellido 
+      SELECT trucks.*, operators.nombre_completo
       FROM trucks 
-      INNER JOIN operators ON trucks.id_operador = operators.id
+      INNER JOIN operators ON trucks.id_operador = operators.id where trucks.is_active = 1
     `;
     
     const results = await conn.query(query);
 
-    // (Opcional) Si deseas, puedes reformatear los resultados aquí, por ejemplo, combinando nombre y apellido.
-    const formattedResults = results.map(truck => {
-      return {
-        ...truck,
-        operador: truck.nombre + ' ' + truck.apellido
-      };
-    });
 
-    return NextResponse.json(formattedResults); // Devolvemos los resultados ya formateados.
+    return NextResponse.json(results); // Devolvemos los resultados ya formateados.
 
   } catch (error) {
     return NextResponse.json(
@@ -34,28 +27,34 @@ export async function GET() {
       }
     );
   }
+  
 }
 
 /** Funcion POST */
 
 export async function POST(request) {
     try {
-      const { placa, eco, nombre_camion ,marca, modelo,año,id_operador} = await request.json();
+      const { placa, eco, nombre_camion ,marca,año,id_operador} = await request.json();
+
+       // Verificar si el operador ya está asignado a un camión
+      
+      // Insertar el registro en la tabla trucks
+
       const result = await conn.query("INSERT INTO trucks SET ?", {
         placa,
         eco,
         nombre_camion,
         marca, 
-        modelo,
         año,
-        id_operador
+        id_operador,
+        is_active: 1,
       });
+      
       return NextResponse.json({
         placa,
         eco,
         nombre_camion,
         marca, 
-        modelo,
         año,
         id_operador,
         id: result.insertId,

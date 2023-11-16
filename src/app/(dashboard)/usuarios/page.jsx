@@ -1,26 +1,25 @@
-"use client";
-import React from 'react'
+"use client"
+import TablaUnidades from "@/components/partials/table/TablaUnidades";
 import Button from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
-import TablaOperadores from '@/components/partials/table/TablaOperadores';
+import { useRouter } from "next/navigation"; 
 
-const Unidades = () => {
+function Unidades() {
     const router = useRouter();
     return (
         <div>
             <div className="py-3">
             <Button
               icon="heroicons-outline:plus-sm"
-              text="Agregar Operador"
+              text="Agregar usuario"
               className=" btn-dark font-normal btn-sm "
               iconClass="text-lg"
               onClick={() => {
-                router.push("/operadores/agregar-operador");
+                router.push("usuarios/agregar-usuario");
               }}
             />
             </div>
             <div className=" space-y-5">
-                <TablaOperadores />
+                <TablaUnidades/>
             </div>
 
         </div>

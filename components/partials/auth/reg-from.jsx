@@ -9,9 +9,11 @@ import Checkbox from "@/components/ui/Checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import { handleRegister } from "./store";
 
+
 const schema = yup
   .object({
-    name: yup.string().required("Name is Required"),
+    nombre: yup.string().required("El nombre es requerido"),
+    apellido: yup.string().required("El apellido es requerido"),
     email: yup.string().email("Invalid email").required("Email is Required"),
     password: yup
       .string()
@@ -49,36 +51,44 @@ const RegForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 ">
       <Textinput
-        name="name"
-        label="name"
+        name="nombre"
+        label="Nombre"
         type="text"
-        placeholder=" Enter your name"
+        placeholder="Ingresa tu(s) nombre(s)"
+        register={register}
+        error={errors.name}
+      />{" "}
+       <Textinput
+        name="apellido"
+        label="Apellido"
+        type="text"
+        placeholder="Ingresa tu(s) apellido(s)"
         register={register}
         error={errors.name}
       />{" "}
       <Textinput
-        name="email"
-        label="email"
+        name="correo"
+        label="correo"
         type="email"
-        placeholder=" Enter your email"
+        placeholder="Ingresa tu correo electronico"
         register={register}
         error={errors.email}
       />
       <Textinput
-        name="password"
-        label="passwrod"
+        name="contraseña"
+        label="Contraseña"
         type="password"
-        placeholder=" Enter your password"
+        placeholder=" Ingresa tu contraseña"
         register={register}
         error={errors.password}
       />
       <Checkbox
-        label="You accept our Terms and Conditions and Privacy Policy"
+        label="Acepto los terminos y condiciones"
         value={checked}
         onChange={() => setChecked(!checked)}
       />
       <button className="btn btn-dark block w-full text-center">
-        Create an account
+        Registrarse 
       </button>
     </form>
   );

@@ -36,7 +36,7 @@ const FormOperador = () => {
     const params = useParams();
 
      //Aqui usamos el paramas que es el parametro que viene de la url y si existe, entonces llenamos la constante operators con los datos del objeto.
-  useEffect(() => {
+  /*useEffect(() => {
 
     if (params.id) {
       axios.get("/api/operadores/" + params.id).then((res) => {
@@ -48,7 +48,7 @@ const FormOperador = () => {
         });
       });
     }
-  }, []);
+  }, []);*/
   
   const {
     register,
@@ -145,13 +145,27 @@ const FormOperador = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} ref={form} className="space-y-4 lg:grid-cols-2 grid gap-5 grid-cols-1 " >
+      <form onSubmit={handleSubmit} ref={form} className="space-y-4 lg:grid-cols-1 grid gap-5 grid-cols-1 " >
         <div>
           <div className="mb-4">
             <InputGroup
-              name="nombre_completo"
-              placeholder="Nombre Completo "
+              name="nombre"
+              placeholder="Nombre(s)"
               label="Nombre"
+              type="text"
+              prepend={<Icon icon="heroicons-outline:user" />}
+              merged
+              error={errors.nombre_completo}
+              register={register}
+              onChange={handleChange} // Asigna la función handleChange al evento onChange.
+              defaultValue={operator.nombre_completo}
+
+            />
+            <div className="mb-4">
+            <InputGroup
+              name="apellido"
+              placeholder="Apellidos(s)"
+              label="Apellido"
               type="text"
               prepend={<Icon icon="heroicons-outline:user" />}
               merged
@@ -163,29 +177,14 @@ const FormOperador = () => {
             />
           </div>
           <div className="mb-4">
-            <InputGroup
-              name="rfc"
-              placeholder="XXXX-XXXXXX-XXX"
-              label="RFC"
-              type="text"
-              prepend={<Icon icon="heroicons-outline:document-text" />}
-              merged
-              error={errors.rfc}
-              register={register}
-              onChange={handleChange} // Asigna la función handleChange al evento onChange.
-              defaultValue={operator.rfc}
-            />
-          </div>
-
-          <div className="mb-4">
 
             <InputGroup
-              name="telefono"
-              id="hi_nuemero"
-              placeholder="(000)-000-0000"
-              label="Numero de Telefono"
+              name="correo"
+              id="correo"
+              placeholder="example@example.com"
+              label="Correo Electronico"
               type="text"
-              prepend={<Icon icon="heroicons-outline:phone" />}
+              prepend={<Icon icon="heroicons-outline:mail" />}
               merged
               error={errors.telefono}
               register={register}
@@ -193,30 +192,29 @@ const FormOperador = () => {
               defaultValue={operator.telefono}
             />
           </div>
-
+          </div>
           <div className="mb-4">
-
             <InputGroup
-              name="telefono_2"
-              id="hi_numero_emergencia"
-              placeholder="(000)-000-0000"
-              label="Numero de Telefono de Emergencia"
-              type="text"
-              prepend={<Icon icon="heroicons-outline:phone" />}
+              name="contraseña"
+              placeholder="*********"
+              label="contraseña"
+              type="password"
+              prepend={<Icon icon="heroicons-outline:key" />}
               merged
-              error={errors.telefono_2}
+              error={errors.rfc}
               register={register}
               onChange={handleChange} // Asigna la función handleChange al evento onChange.
-              defaultValue={operator.telefono_2}
+              defaultValue={operator.rfc}
             />
           </div>
+        </div>
+        
+        {/*<div>
 
-        </div>
-        <div>
-          {/*<Card title="Subir Foto">
+          <Card title="Subir Foto">
             <DropZone />
-            </Card>*/ }
-        </div>
+            </Card>
+        </div>*/}
 
         <div className="ltr:text-right rtl:text-left">
           <Button
