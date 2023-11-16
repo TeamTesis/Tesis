@@ -7,7 +7,7 @@ import "./scss/app.scss";
 import { Provider } from "react-redux";
 import store from "../../store";
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   return (
     <>
       <html lang="en">

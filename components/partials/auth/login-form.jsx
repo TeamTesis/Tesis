@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Textinput from "@/components/ui/Textinput";
 import { useForm } from "react-hook-form";
@@ -7,8 +8,8 @@ import { useRouter } from "next/navigation";
 import Checkbox from "@/components/ui/Checkbox";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
-import { handleLogin } from "./store";
-import { toast } from "react-toastify";
+import {signIn} from "next-auth/react"
+
 const schema = yup
   .object({
     email: yup.string().email("Invalid email").required("Email is Required"),
@@ -16,27 +17,29 @@ const schema = yup
   })
   .required();
 const LoginForm = () => {
+
   const dispatch = useDispatch();
-  const { users } = useSelector((state) => state.auth);
   const {
     register,
     formState: { errors },
-    handleSubmit,
   } = useForm({
     resolver: yupResolver(schema),
     //
     mode: "all",
   });
   const router = useRouter();
-  const onSubmit = (data) => {
+  /*const handleSubmit = (data) => {
     const user = users.find(
       (user) => user.email === data.email && user.password === data.password
     );
     if (user) {
-      dispatch(handleLogin(true));
-      setTimeout(() => {
-        router.push("/analytics");
-      }, 1500);
+      const response = signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: true,
+      });
+      console.log(response);
+      router.push("/analytics");
     } else {
       toast.error("Invalid credentials", {
         position: "top-right",
@@ -49,26 +52,44 @@ const LoginForm = () => {
         theme: "light",
       });
     }
-  };
-
+  };*/
+  //const users = useSelector((state) => state.auth);
   const [checked, setChecked] = useState(false);
 
+  const [user, setUser] = useState({email: "", password: ""})
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("user", user);
+    console.log(signIn);
+
+   const response = await signIn("credentials", {
+      email: user.email,
+      password: user.password,
+      redirect: false,
+    });
+    console.log({response});
+    if(!response?.error){
+      router.push("/analytics");
+  };
+}
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
+    <form onSubmit={handleSubmit} className="space-y-4 ">
       <Textinput
         name="email"
         label="email"
-        defaultValue="dashcode@gmail.com"
         type="email"
         register={register}
+        onChange={(e) => setUser({...user, email: e.target.value})}
         error={errors?.email}
       />
       <Textinput
         name="password"
         label="contraseña"
         type="password"
-        defaultValue="dashcode"
         register={register}
+        onChange={(e) => setUser({...user, password: e.target.value})}
         error={errors.password}
       />
       <div className="flex justify-between">

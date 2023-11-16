@@ -33,13 +33,7 @@ export default function RootLayout({ children }) {
   const [navbarType] = useNavbarType();
 
   const router = useRouter();
-  const { isAuth } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (!isAuth) {
-      router.push("/");
-    }
-  }, [isAuth]);
   const location = usePathname();
   // header switch class
   const switchHeaderClass = () => {

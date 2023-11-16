@@ -2,10 +2,16 @@
 import Link from "next/link";
 import LoginForm from "@/components/partials/auth/login-form";
 import useDarkMode from "@/hooks/useDarkMode";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 // image import
 
-const Login = () => {
+export default async function Login( ) {
+  /*const session = await getServerSession(); //Copiar lo mismo al registro linea 11 - 20
+  if (session) {
+    redirect('/analytics')
+  }*/
   const [isDark] = useDarkMode();
   return (
     <>
@@ -59,6 +65,8 @@ const Login = () => {
                   </div>
                 </div>
                 <LoginForm />
+
+                      
                 <div className="md:max-w-[345px] mx-auto font-normal text-slate-500 dark:text-slate-400 mt-12 uppercase text-sm">
                   ¿No tienes una cuenta?{" "}
                   <Link
@@ -68,6 +76,8 @@ const Login = () => {
                     ¡Registrate aqui!
                   </Link>
                 </div>
+
+                  
 
               </div>
               <div className="auth-footer text-center">
@@ -79,6 +89,5 @@ const Login = () => {
       </div>
     </>
   );
-};
+}
 
-export default Login;

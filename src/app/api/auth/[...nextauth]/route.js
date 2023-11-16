@@ -1,36 +1,36 @@
 import { NextResponse } from "next/server";
-import { conn } from "@/libs/db";
+import { conn } from "src/libs/db";
 import util from "util";
 import bcrypt from 'bcrypt';
+import NextAuth from "next-auth/next";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 const query = util.promisify(conn.query).bind(conn);
 
-export const authOptions = {
+ const handler = NextAuth ({
     session: {
         strategy: "jwt",
     },
-    providers: {
-        credentials: {
+    pages: {
+        signIn: "/",
+    },
+    providers: [
+        CredentialsProvider({
             async authorize(credentials) {
-                console.log(credentials);
-                
-                const { correo, contraseña } = credentials;
 
-                if (!correo || !contraseña) {
-                    return NextResponse.next();
+                if (!credentials?.email || !credentials?.password) {
+                    return null;
                 }
 
                 try {
-                    const result = await query("SELECT * FROM users WHERE correo = ?", [correo]);
-
+                    const result = await query("SELECT * FROM users WHERE email = ?", [credentials.email] );
+                    
                     if (result.length > 0) {
                         const user = result[0];
-                        const passwordMatch = await bcrypt.compare(contraseña, user.contraseña);
-
+                        const passwordMatch = await bcrypt.compare(credentials.password || "", user.password);
                         if (passwordMatch) {
                             return {
                                 ...user,
-                                password: undefined,
                             };
                         }
                     }
@@ -39,8 +39,9 @@ export const authOptions = {
                 }
 
                 return null;
-            },
-        },
-    },
-}
-  
+            }
+        })
+    ],
+});
+
+export { handler as GET, handler as POST };
