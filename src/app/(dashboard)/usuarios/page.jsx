@@ -14,7 +14,7 @@ function Unidades() {
               className=" btn-dark font-normal btn-sm "
               iconClass="text-lg"
               onClick={() => {
-                router.push("unidades/agregar-usuario");
+                router.push("usuarios/agregar-usuario");
               }}
             />
             </div>

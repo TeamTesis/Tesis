@@ -3,7 +3,7 @@ import { conn } from "src/libs/db"
 
 export async function GET() {
     try {
-      const query = "SELECT * FROM operators where is_active = 1"
+      const query = "SELECT * FROM operators where is_active = 1 AND  despacho ?"
       const results = await conn.query(query);
       return NextResponse.json(results);
     } catch (error) {
