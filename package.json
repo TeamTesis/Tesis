@@ -23,6 +23,7 @@
     "@tippyjs/react": "^4.2.6",
     "apexcharts": "^3.44.0",
     "axios": "^1.5.1",
+    "bcrypt": "^5.1.1",
     "chart.js": "^4.2.1",
     "cleave.js": "^1.6.0",
     "dayjs": "^1.11.7",
@@ -30,7 +31,9 @@
     "eslint-config-next": "13.2.4",
     "framer-motion": "^10.10.0",
     "leaflet": "^1.9.3",
+    "mysql": "^2.18.1",
     "next": "^13.5.6",
+    "next-auth": "^4.24.4",
     "react": "18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-beautiful-dnd": "^13.1.1",
@@ -55,12 +58,15 @@
     "simplebar-react": "^3.2.1",
     "sort-by": "^1.2.0",
     "swiper": "^9.1.0",
+    "ts": "^0.2.2",
+    "util": "^0.12.5",
     "uuidv4": "^6.2.13",
     "yup": "^1.0.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
-    "tailwindcss": "^3.2.7"
+    "tailwindcss": "^3.2.7",
+    "typescript": "^5.2.2"
   }
 }

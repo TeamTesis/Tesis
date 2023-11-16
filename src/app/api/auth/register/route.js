@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { conn } from "@/libs/db";
+import { conn } from "src/libs/db";
 import util from "util";
 import bcrypt from 'bcrypt';
 
@@ -7,10 +7,10 @@ import bcrypt from 'bcrypt';
 const query = util.promisify(conn.query).bind(conn);
 
 export async function POST(request) {
-    const { nombre, apellido, correo, contraseña, id_empresa, is_active, id_device } = await request.json();
+    const { nombre, apellido, password, email, id_empresa, is_active } = await request.json();
 
     // Validate the user's input. This is a very basic example.
-    if (!nombre || !apellido || !correo || !contraseña) {
+    if (!nombre || !apellido || !email || !password) {
         return NextResponse.json({
             status: 400,
             message: "Missing required user fields",
@@ -20,17 +20,16 @@ export async function POST(request) {
     try {
         // Generate a salt and hash the password along with the salt
         const saltRounds = 10; // This value can be adjusted depending on the level of security you want.
-        const hashedPassword = await bcrypt.hash(contraseña, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // Now, you can store the hashed password in the database instead of the plain-text one
         const result = await query("INSERT INTO users SET ?", {
             nombre,
             apellido,
-            correo,
-            contraseña: hashedPassword, // Store the hashed password
+            password: hashedPassword, // Store the hashed password
+            email,
             id_empresa,
-            is_active,
-            id_device
+            is_active
         });
 
         return NextResponse.json({
