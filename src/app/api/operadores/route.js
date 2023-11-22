@@ -6,7 +6,6 @@ export async function GET(request) {
 
   
     try {
-
       const token = await getToken({ req: request })
       
       console.log("token",token);
