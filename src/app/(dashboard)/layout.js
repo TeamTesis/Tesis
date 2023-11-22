@@ -32,6 +32,7 @@ export default function RootLayout({ children }) {
   const [skin] = useSkin();
   const [navbarType] = useNavbarType();
 
+
   const router = useRouter();
 
   const location = usePathname();

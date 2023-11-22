@@ -10,7 +10,7 @@ export async function GET(request) {
 
     if (session) {
 
-        return NextResponse.json({  status: 200,  message: "Usuario autenticado",  data: session.user  });
+        return NextResponse.json({  status: 200,  message: "Usuario autenticado",  data: session  });
         
     }
 

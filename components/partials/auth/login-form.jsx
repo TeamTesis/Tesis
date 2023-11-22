@@ -63,7 +63,7 @@ const LoginForm = () => {
     console.log("user", user);
     console.log(signIn);
 
-   const response = await signIn("credentials", {
+    const response = await signIn("credentials", {
       email: user.email,
       password: user.password,
       redirect: false,

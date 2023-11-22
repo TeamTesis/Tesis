@@ -1,11 +1,12 @@
-"use client";
+"use client"
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
 import Card from "@/components/ui/Card";
 import GroupChart1 from "@/components/partials/widget/chart/group-chart-1";
 import SelectMonth from "@/components/partials/SelectMonth";
 import Unidadestable from "@/components/partials/table/unidades-table";
 import HomeBredCurbs from "@/components/partials/HomeBredCurbs";
+import { getSession } from "next-auth/react";
+import { useEffect } from "react";
 
 const MostSales = dynamic(
   () => import("@/components/partials/widget/most-sales"),
@@ -14,7 +15,14 @@ const MostSales = dynamic(
   }
 );
 const Dashboard = () => {
-  const [filterMap, setFilterMap] = useState("usa");
+
+  useEffect(() => {
+    (async () => {
+      const session = await getSession();
+      console.log(session.user.id);
+    })();
+  }, [])
+
   return (
     <div>
       <HomeBredCurbs title="Dashboard" />
