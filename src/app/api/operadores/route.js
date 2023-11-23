@@ -3,7 +3,7 @@ import { conn } from "src/libs/db"
 import { getToken } from "next-auth/jwt";
 
 export async function GET(request) {
-
+  // Esto si
   
     try {
       const token = await getToken({ req: request })
