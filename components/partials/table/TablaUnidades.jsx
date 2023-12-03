@@ -324,8 +324,14 @@ const TablaUnidades = ({ title = "Unidades" }) => {
             <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
           </div>
         </div>
+        {trucks.length === 0 ? (
+          <div className="text-center py-5">
+            No hay registros
+          </div>
+        ) : (
         <div className="overflow-x-auto -mx-6">
           <div className="inline-block min-w-full align-middle">
+
             <div className="overflow-hidden ">
               <table
                 className="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700"
@@ -348,6 +354,7 @@ const TablaUnidades = ({ title = "Unidades" }) => {
                   className="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700"
                   {...getTableBodyProps}
                 >
+                  
                   {page.map((row) => {
                     prepareRow(row);
                     const { key, ...restRowProps } = row.getRowProps();
@@ -373,6 +380,7 @@ const TablaUnidades = ({ title = "Unidades" }) => {
             </div>
           </div>
         </div>
+        )}
         <div className="md:flex md:space-y-0 space-y-5 justify-between mt-6 items-center z-10">
           <div className=" flex items-center space-x-3 rtl:space-x-reverse">
             <select
@@ -457,6 +465,7 @@ const TablaUnidades = ({ title = "Unidades" }) => {
           </ul>
         </div>
         {/*end*/}
+        
       </Card>
      
     </>

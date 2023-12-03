@@ -1,52 +1,113 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Textinput from "@/components/ui/Textinput";
-import InputGroup from "@/components/ui/InputGroup";
-import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { estadosMunicipios } from "@/constant/estadosMunicipios";
+import Select from "react-select";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import axios from "axios";
+
+const styles = {
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: "14px",
+  }),
+};
 
 const steps = [
   {
     id: 1,
-    title: "Account Details",
+    title: "Detalles de la cuenta",
   },
   {
     id: 2,
-    title: "Personal info-500",
+    title: "Agregar empresa",
   },
-, 
+  ,
 ];
 
 let stepSchema = yup.object().shape({
-  username: yup.string().required(" User name is required"),
-  fullname: yup.string().required("Full name is required"),
-  email: yup.string().email("Email is not valid").required("Email is required"),
-  phone: yup.string().required("Phone number is required"),
+  nombre: yup.string().required("El/los nombre(s) es requerido"),
+  apellido: yup.string().required("El/los apellido(s) es requerido"),
+  email: yup
+    .string()
+    .email("Correo electronico es invalido")
+    .required("Correo electronico es requerido"),
   //.matches(/^[0-9]{12}$/, "Phone number is not valid"),
   password: yup
     .string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    .required("La contraseña es requerida")
+    .min(8, "La contraseña debe tener al menos 8 caracteres"),
   confirmpass: yup
     .string()
-    .required("Confirm Password is required")
-    .oneOf([yup.ref("password"), null], "Passwords must match"),
+    .required("La confirmacion de contraseña es requerida")
+    .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir"),
 });
 
 let personalSchema = yup.object().shape({
-  fname: yup.string().required(" First name is required"),
-  lname: yup.string().required(" Last name is required"),
+  nombre_empresa: yup.string().required("El nombre de la empresa es requerido"),
+  rfc: yup.string().required(" el rfc es requerido").min(12).max(13),
+  cp: yup.string().required(" Codigo postal es requerido").min(5).max(5),
+  calle: yup.string().required(" La calle es requerida"),
+  colonia: yup.string().required(" La colonia es requerida"),
 });
 
 const url =
   /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/gm;
 
 const FormWizard = () => {
+
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState(null);
+  const [municipioSeleccionado, setMunicipioSeleccionado] = useState(null);
+  const [municipios, setMunicipios] = useState([]);
   const [stepNumber, setStepNumber] = useState(0);
+  const router = useRouter();
+
+  const [registros, setRegistro] = useState({
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "",
+    confirmpass: "",
+    nombre_empresa: "",
+    rfc: "",
+    num_int: "",
+    num_ext: "",
+    cp: "",
+    calle: "",
+    colonia: "",
+    estado: "",
+    municipio: "",
+  });
+ 
+  const handleEstadoChange = (opcionEstado, actionMeta) => {
+    setEstadoSeleccionado(opcionEstado);
+    setMunicipios(estadosMunicipios[opcionEstado.value]);
+    setMunicipioSeleccionado(null); // Resetea la selección de municipio al cambiar de estado
+    console.log(opcionEstado);
+    const fieldName = actionMeta.name;
+    setRegistro({
+      ...registros,
+      [fieldName]: opcionEstado.value,
+    });
+  };
+
+  const handleMunicipioChange = (opcionMunicipio, actionMeta) => {
+    setMunicipioSeleccionado(opcionMunicipio);
+    console.log(opcionMunicipio);
+    const fieldName2 = actionMeta.name;
+    setRegistro({
+      ...registros,
+      [fieldName2]: opcionMunicipio.value,
+    });
+  };
 
   // find current step schema
   let currentStepSchema;
@@ -56,12 +117,6 @@ const FormWizard = () => {
       break;
     case 1:
       currentStepSchema = personalSchema;
-      break;
-    case 2:
-      currentStepSchema = addressSchema;
-      break;
-    case 3:
-      currentStepSchema = socialSchema;
       break;
     default:
       currentStepSchema = stepSchema;
@@ -81,16 +136,76 @@ const FormWizard = () => {
     mode: "all",
   });
 
-  const onSubmit = (data) => {
-    // next step until last step . if last step then submit form
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    // Actualiza el estado de trucks basado en el nombre del input y su valor.
+    setRegistro({
+      ...registros,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onSubmit = async (data) => {
+    
+    try {
+      let totalSteps = steps.length;
+      const isLastStep = stepNumber === totalSteps - 1;
+      if (isLastStep) {
+        console.log(data);
+        let response;
+
+        response = await axios.post("/api/auth/register", registros);
+        console.log(response);
+
+        if (response.status === 200) {
+          // El código 200 indica que se ha creado un nuevo recurso.
+          toast.success("Registro creado con éxito!", {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          // Después de un tiempo de espera, redirige al usuario y refresca la página.
+          setTimeout(() => {
+            router.push("/"); // Redirige al usuario a la página de 'unidades'.
+            router.refresh(); // Refresca la página actual.
+          }, 1500);
+        }
+      } else {
+        setStepNumber(stepNumber + 1);
+      }
+    } catch (error) {
+      // Si ocurre un error en la solicitud, capturamos el error y mostramos una notificación de error.
+      console.error("Hubo un error al enviar los datos: ", error);
+      toast.error(
+        "Error al procesar el registro. Por favor, inténtelo de nuevo.",
+        {
+          position: "top-right",
+          autoClose: 3000, // Puede ajustar el tiempo antes de que la notificación se cierre automáticamente.
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+    }
+  };
+
+  /**
+   * // next step until last step . if last step then submit form
     let totalSteps = steps.length;
     const isLastStep = stepNumber === totalSteps - 1;
     if (isLastStep) {
       console.log(data);
     } else {
       setStepNumber(stepNumber + 1);
-    }
-  };
+    } */
 
   const handlePrev = () => {
     setStepNumber(stepNumber - 1);
@@ -98,7 +213,7 @@ const FormWizard = () => {
 
   return (
     <div>
-      <Card title="Horizontal">
+      <Card>
         <div>
           <div className="flex z-[5] items-center relative justify-center md:mx-8">
             {steps.map((item, i) => (
@@ -146,44 +261,33 @@ const FormWizard = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               {stepNumber === 0 && (
                 <div>
-                  <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 pt-10">
-                    <div className="lg:col-span-3 md:col-span-2 col-span-1">
-                      <h4 className="text-base text-slate-800 dark:text-slate-300 my-6">
-                        Enter Your Account Details
-                      </h4>
-                    </div>
+                  <div className="grid  grid-cols-1 gap-5 pt-10">
                     <Textinput
-                      label="Username"
+                      name="nombre"
+                      label="Nombre"
                       type="text"
-                      placeholder="Type your User Name"
-                      name="username"
-                      error={errors.username}
+                      placeholder="Ingresa tu(s) nombre(s)"
                       register={register}
-                    />
+                      error={errors.name}
+                      onChange={handleChange}
+                    />{" "}
                     <Textinput
-                      label="Full name"
+                      name="apellido"
+                      label="Apellido"
                       type="text"
-                      placeholder="Full name"
-                      name="fullname"
-                      error={errors.fullname}
+                      placeholder="Ingresa tu(s) apellido(s)"
                       register={register}
-                    />
+                      error={errors.apellido}
+                      onChange={handleChange}
+                    />{" "}
                     <Textinput
-                      label="Email"
+                      label="Correo electronico"
                       type="email"
-                      placeholder="Type your email"
+                      placeholder="Ingresa tu correo electronico"
                       name="email"
                       error={errors.email}
                       register={register}
-                    />
-                    <InputGroup
-                      label="Phone Number"
-                      type="text"
-                      prepend="MY (+6)"
-                      placeholder="Phone Number"
-                      name="phone"
-                      error={errors.phone}
-                      register={register}
+                      onChange={handleChange}
                     />
                     <Textinput
                       label="Password"
@@ -193,6 +297,7 @@ const FormWizard = () => {
                       error={errors.password}
                       hasicon
                       register={register}
+                      onChange={handleChange}
                     />
                     <Textinput
                       label="Confirm Password"
@@ -201,6 +306,7 @@ const FormWizard = () => {
                       name="confirmpass"
                       error={errors.confirmpass}
                       register={register}
+                      onChange={handleChange}
                       hasicon
                     />
                   </div>
@@ -209,28 +315,110 @@ const FormWizard = () => {
 
               {stepNumber === 1 && (
                 <div>
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
-                    <div className="md:col-span-2 col-span-1 mt-8">
-                      <h4 className="text-base text-slate-800 dark:text-slate-300 my-6">
-                        Enter Your Personal info-500
-                      </h4>
+                  <div className="grid md:grid-cols-2 grid-cols-1 gap-5 pt-14">
+                    <Textinput
+                      label="Nombre de la empresa"
+                      type="text"
+                      placeholder="Ej. Elysium"
+                      name="nombre_empresa"
+                      error={errors.nombre_empresa}
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <Textinput
+                      label="RFC"
+                      type="text"
+                      placeholder="XXXX-XXXXXX-XXX"
+                      name="rfc"
+                      error={errors.rfc}
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <Textinput
+                      label="Numero interior"
+                      type="text"
+                      placeholder="# 0000"
+                      name="num_int"
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <Textinput
+                      label="Numero exterior"
+                      type="text"
+                      placeholder="# 0000"
+                      name="num_ext"
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <Textinput
+                      label="Calle"
+                      type="text"
+                      placeholder="Ej. Avenida Elias Zamora Verduzco"
+                      name="calle"
+                      error={errors.calle}
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <Textinput
+                      label="Codigo postal"
+                      type="text"
+                      placeholder="Ej. 00000"
+                      name="cp"
+                      error={errors.cp}
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <Textinput
+                      label="Colonia"
+                      type="text"
+                      placeholder="Ej. Valle de las garzas"
+                      name="colonia"
+                      error={errors.colonia}
+                      register={register}
+                      onChange={handleChange}
+                    />
+                    <div>
+                      <label htmlFor="hh0" className="form-label ">
+                        Estado
+                      </label>
+                      <Select
+                        id="hh1"
+                        placeholder="Seleccione el estado"
+                        name="estado"
+                        className="react-select"
+                        classNamePrefix="select"
+                        options={Object.keys(estadosMunicipios).map(
+                          (estado) => ({ value: estado, label: estado })
+                        )}
+                        onChange={handleEstadoChange}
+                        value={estadoSeleccionado}
+                        styles={styles}
+                        error={errors.estado}
+                        required
+                      />
                     </div>
-                    <Textinput
-                      label="First name"
-                      type="text"
-                      placeholder="First name"
-                      name="fname"
-                      error={errors.fname}
-                      register={register}
-                    />
-                    <Textinput
-                      label="Last name"
-                      type="text"
-                      placeholder="Last name"
-                      name="lname"
-                      error={errors.lname}
-                      register={register}
-                    />
+                    <div>
+                      <label htmlFor="hh0" className="form-label ">
+                        Municipio
+                      </label>
+                      <Select
+                        id="hh2"
+                        placeholder="Seleccione el municipio"
+                        name="municipio"
+                        className="react-select"
+                        classNamePrefix="select"
+                        options={municipios.map((municipio) => ({
+                          value: municipio,
+                          label: municipio,
+                        }))}
+                        onChange={handleMunicipioChange}
+                        value={municipioSeleccionado}
+                        isDisabled={!estadoSeleccionado}
+                        styles={styles}
+                        error={errors.municipio}
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -247,7 +435,7 @@ const FormWizard = () => {
                   />
                 )}
                 <Button
-                  text={stepNumber !== steps.length - 1 ? "next" : "submit"}
+                  text={stepNumber !== steps.length - 1 ? "Siguiente" : "Guardar"}
                   className="btn-dark"
                   type="submit"
                 />

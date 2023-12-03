@@ -19,7 +19,7 @@ const Dashboard = () => {
   useEffect(() => {
     (async () => {
       const session = await getSession();
-      console.log(session.user.id);
+      console.log(session.user);
     })();
   }, [])
 

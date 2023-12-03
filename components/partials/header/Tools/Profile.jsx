@@ -1,31 +1,40 @@
-import React from "react";
+"use"
+import { useEffect , useState} from "react";
 import Dropdown from "@/components/ui/Dropdown";
 import Icon from "@/components/ui/Icon";
 import { Menu, Transition } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react"
+import { getSession } from "next-auth/react";
 
 const ProfileLabel = () => {
+
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const sessionData = await getSession();
+      if (sessionData) {
+        setSession(sessionData);
+        console.log(sessionData.user.email);
+      }
+    })();
+  }, []);
+
+
   return (
     <div className="flex items-center">
-      <div className="flex-1 ltr:mr-[10px] rtl:ml-[10px]">
-        <div className="lg:h-8 lg:w-8 h-7 w-7 rounded-full">
-          <img
-            src="/assets/images/all-img/user.png"
-            alt=""
-            className="block w-full h-full object-cover rounded-full"
-          />
-        </div>
-      </div>
-      <div className="flex-none text-slate-600 dark:text-white text-sm font-normal items-center lg:flex hidden overflow-hidden text-ellipsis whitespace-nowrap">
-        <span className="overflow-hidden text-ellipsis whitespace-nowrap w-[85px] block">
-          Edson Sotomayor
-        </span>
+      {session && session.user && (
+        <div className="flex-none text-slate-600 dark:text-white text-sm font-normal items-center lg:flex hidden overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap w-[170px] block">
+            {session.user.email}
+          </span>
         <span className="text-base inline-block ltr:ml-[10px] rtl:mr-[10px]">
           <Icon icon="heroicons-outline:chevron-down"></Icon>
         </span>
       </div>
+      )}
     </div>
   );
 };
@@ -35,14 +44,6 @@ const Profile = () => {
   const router = useRouter();
 
   const ProfileMenu = [
-    {
-      label: "Profile",
-      icon: "heroicons-outline:user",
-
-      action: () => {
-        router.push("/profile");
-      },
-    },
     {
       label: "Configuracion",
       icon: "heroicons-outline:cog-8-tooth",
@@ -57,13 +58,6 @@ const Profile = () => {
 
       action: () => {
         router.push("/usuarios");
-      },
-    },
-    {
-      label: "Faq",
-      icon: "heroicons-outline:information-circle",
-      action: () => {
-        router.push("/faq");
       },
     },
     {

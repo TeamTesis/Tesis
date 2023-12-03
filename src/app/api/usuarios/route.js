@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { conn } from "src/libs/db"
+import getIdEmpresa from "../id_empresa";
+import bcrypt from 'bcrypt';
 
-export async function GET() {
+export async function GET(request) {
     try {
-      const query = "SELECT * FROM users where is_active = 1 and id_empresa = 1" 
-      const results = await conn.query(query);
+      const { idEmpresa } = await getIdEmpresa(request);
+      
+      const results = await conn.query("SELECT * FROM users where is_active = 1 AND id_empresa = ?", [idEmpresa]);
       return NextResponse.json(results);
     } catch (error) {
       return NextResponse.json(
@@ -20,16 +23,25 @@ export async function GET() {
 
 export async function POST(request) {
     try {
-      const { nombre_completo, telefono, telefono_2 ,rfc} = await request.json();
+      const { idEmpresa } = await getIdEmpresa(request);
+      const { nombre, apellido, email ,password,id_empresa} = await request.json();
+      const saltRounds = 10; // This value can be adjusted depending on the level of security you want.
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
       const result = await conn.query("INSERT INTO users SET ?", {
-      
+        nombre,
+        apellido,
+        email,
+        password : hashedPassword,
+        id_empresa : idEmpresa,
+        is_active: 1,
       });
   
       return NextResponse.json({
-        nombre_completo,
-        telefono,
-        telefono_2,
-        rfc, 
+        nombre,
+        apellido,
+        email,
+        password,
+        id_empresa,
         id: result.insertId,
       });
     } catch (error) {

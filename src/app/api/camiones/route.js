@@ -1,22 +1,15 @@
 import { NextResponse } from "next/server";
 import { conn } from "src/libs/db"
-
+import getIdEmpresa from "../id_empresa";
 /** Funcion GET */
 
-export async function GET() {
+export async function GET(request) {
   try {
     // Realizamos la consulta con un JOIN para obtener datos de ambas tablas.
-    const query = `
-      SELECT trucks.*, operators.nombre_completo
-      FROM trucks 
-      INNER JOIN operators ON trucks.id_operador = operators.id where trucks.is_active = 1
-    `;
-    
-    const results = await conn.query(query);
+    const { idEmpresa } = await getIdEmpresa(request);
 
-
-    return NextResponse.json(results); // Devolvemos los resultados ya formateados.
-
+    const results = await conn.query("SELECT trucks.*, operators.nombre_completo FROM trucks INNER JOIN operators ON trucks.id_operador = operators.id WHERE trucks.is_active = 1 AND trucks.id_enterprise = ?", [idEmpresa]);
+    return NextResponse.json(results);// Devolvemos los resultados ya formateados.*/
   } catch (error) {
     return NextResponse.json(
       {
@@ -34,11 +27,9 @@ export async function GET() {
 
 export async function POST(request) {
     try {
-      const { placa, eco, nombre_camion ,marca,año,id_operador} = await request.json();
-
-       // Verificar si el operador ya está asignado a un camión
-      
-      // Insertar el registro en la tabla trucks
+      // Realizamos la consulta con un JOIN para obtener datos de ambas tablas.
+      const { idEmpresa } = await getIdEmpresa(request);
+      const { placa, eco, nombre_camion ,marca,año,id_operador,id_enterprise} = await request.json();
 
       const result = await conn.query("INSERT INTO trucks SET ?", {
         placa,
@@ -47,6 +38,7 @@ export async function POST(request) {
         marca, 
         año,
         id_operador,
+        id_enterprise: idEmpresa,
         is_active: 1,
       });
       
@@ -57,6 +49,7 @@ export async function POST(request) {
         marca, 
         año,
         id_operador,
+        id_enterprise,
         id: result.insertId,
       });
     } catch (error) {

@@ -8,26 +8,26 @@ import InputGroup from "@/components/ui/InputGroup";
 import Card from "@/components/ui/Card";
 import DropZone from "@/components/partials/froms/DropZone";
 import Button from "@/components/ui/Button";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; 
 import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
 
 
 const FormValidationSchema = yup.object({
-    nombre_completo: yup.string().required("Ingrese en nombre del Operador").max(255),
-    rfc: yup.string().required("Ingrese el RFC del Operador").min(12).max(13),
-    telefono: yup.string().required("Ingrese un numero de telefono valido").min(10).max(10),
-    telefono_2: yup.string().required("Ingrese un numero de telefono valido").min(10).max(10),
+    nombre: yup.string().required("Nombre del usuario es requerido").max(255),
+    apellido: yup.string().required("Apellido del usuario es requerido").max(255),
+    email: yup.string().required("Email del usuario es requerido").max(100),
+    password: yup.string().required("Contraseña es requerida").min(5).max(24),
   })
 
 const FormOperador = () => {
   const router = useRouter();
 
-  const [operator, setOperators] = useState({
-    nombre_completo: "",
-    rfc : "",
-    telefono: "",
-    telefono_2: "",
+  const [user, setUsers] = useState({
+    nombre: "",
+    apellido : "",
+    emial: "",
+    password: "",
   });
 
     // Referencia para manipular el formulario
@@ -40,7 +40,7 @@ const FormOperador = () => {
 
     if (params.id) {
       axios.get("/api/operadores/" + params.id).then((res) => {
-        setOperators({
+        setUsers({
           nombre_completo: res.data.nombre_completo,
           rfc : res.data.rfc,
           telefono: res.data.telefono,
@@ -60,9 +60,9 @@ const FormOperador = () => {
 
   const handleChange = (e) => {
     console.log(e.target.value);
-    // Actualiza el estado de operator basado en el nombre del input y su valor.
-    setOperators({
-      ...operator,
+    // Actualiza el estado de user basado en el nombre del input y su valor.
+    setUsers({
+      ...user,
       [e.target.name]: e.target.value,
     });
   };
@@ -75,7 +75,7 @@ const FormOperador = () => {
 
       if (!params.id) {
         // Si params.id no existe, estamos en modo creación y hacemos una solicitud POST.
-        response = await axios.post("/api/operadores", operator);
+        response = await axios.post("/api/usuarios", user);
 
         // Si la solicitud fue exitosa, mostramos una notificación de éxito.
         if (response.status === 200) {
@@ -93,13 +93,13 @@ const FormOperador = () => {
           // Después de un tiempo de espera, redirige al usuario y refresca la página.
           setTimeout(() => {
             form.current.reset();
-            router.push("/operadores"); // Redirige al usuario a la página de 'unidades'.
+            router.push("/usuarios"); // Redirige al usuario a la página de 'unidades'.
             router.refresh(); // Refresca la página actual.
           }, 1500);
         }
       } else {
         // Si params.id existe, estamos en modo edición y hacemos una solicitud PUT.
-        response = await axios.put(`/api/operadores/${params.id}`, operator);
+        response = await axios.put(`/api/usuarios/${params.id}`, user);
 
         // Si la solicitud fue exitosa, mostramos una notificación de éxito.
         if (response.status === 200) {
@@ -117,7 +117,7 @@ const FormOperador = () => {
           // Aquí también puedes redirigir o refrescar la página si es necesario después de actualizar.
           setTimeout(() => {
             form.current.reset();
-            router.push("/operadores"); // Redirige al usuario a la página de 'unidades'.
+            router.push("/usuarios"); // Redirige al usuario a la página de 'unidades'.
             router.refresh(); // Refresca la página actual.
           }, 1500);
         }
@@ -155,10 +155,10 @@ const FormOperador = () => {
               type="text"
               prepend={<Icon icon="heroicons-outline:user" />}
               merged
-              error={errors.nombre_completo}
+              error={errors.nombre}
               register={register}
               onChange={handleChange} // Asigna la función handleChange al evento onChange.
-              defaultValue={operator.nombre_completo}
+              defaultValue={user.nombre_completo}
 
             />
             <div className="mb-4">
@@ -169,42 +169,39 @@ const FormOperador = () => {
               type="text"
               prepend={<Icon icon="heroicons-outline:user" />}
               merged
-              error={errors.nombre_completo}
+              error={errors.apellido}
               register={register}
               onChange={handleChange} // Asigna la función handleChange al evento onChange.
-              defaultValue={operator.nombre_completo}
+              defaultValue={user.nombre_completo}
 
             />
           </div>
           <div className="mb-4">
-
             <InputGroup
-              name="correo"
-              id="correo"
+              name="email"
               placeholder="example@example.com"
               label="Correo Electronico"
               type="text"
               prepend={<Icon icon="heroicons-outline:mail" />}
               merged
-              error={errors.telefono}
+              error={errors.email}
               register={register}
               onChange={handleChange} // Asigna la función handleChange al evento onChange.
-              defaultValue={operator.telefono}
+              defaultValue={user.telefono}
             />
           </div>
           </div>
           <div className="mb-4">
             <InputGroup
-              name="contraseña"
+              name="password"
               placeholder="*********"
               label="contraseña"
               type="password"
               prepend={<Icon icon="heroicons-outline:key" />}
               merged
-              error={errors.rfc}
+              error={errors.password}
               register={register}
               onChange={handleChange} // Asigna la función handleChange al evento onChange.
-              defaultValue={operator.rfc}
             />
           </div>
         </div>
