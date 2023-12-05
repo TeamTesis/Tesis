@@ -145,7 +145,7 @@ const FormOperador = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} ref={form} className="space-y-4 lg:grid-cols-2 grid gap-5 grid-cols-1 " >
+      <form onSubmit={handleSubmit} ref={form} className="space-y-4  grid gap-5 grid-cols-1 " >
         <div>
           <div className="mb-4">
             <InputGroup
