@@ -9,7 +9,7 @@ import Checkbox from "@/components/ui/Checkbox";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import {signIn} from "next-auth/react"
-
+import { toast } from "react-toastify";
 const schema = yup
   .object({
     email: yup.string().email("Invalid email").required("Email is Required"),
@@ -69,9 +69,20 @@ const LoginForm = () => {
       redirect: false,
     });
     console.log({response});
-    if(!response?.error){
+    if (response.error) {
+        toast.error("Oops! Las credenciales proporcionadas no son correctas. Por favor, verifica tu email y contraseña e intenta de nuevo.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
       router.push("/analytics");
-  };
+    }
 }
 
   return (
@@ -91,6 +102,7 @@ const LoginForm = () => {
         register={register}
         onChange={(e) => setUser({...user, password: e.target.value})}
         error={errors.password}
+        hasicon
       />
       <div className="flex justify-between">
         <Checkbox

@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import Checkbox from "@/components/ui/Checkbox";
 import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
 
 
 const schema = yup
@@ -86,9 +87,9 @@ const RegForm = () => {
         value={checked}
         onChange={() => setChecked(!checked)}
       />
-      <button className="btn btn-dark block w-full text-center">
+      <Link href="" className="btn btn-dark block w-full text-center">
         Registrarse 
-      </button>
+      </Link>
     </form>
   );
 };

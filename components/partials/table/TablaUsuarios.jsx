@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import React, { useState, useMemo, useEffect} from "react";
-import { OperadoresTable } from "../../../constant/table-data";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
@@ -58,7 +57,7 @@ const TablaUsuarios = ({ title = "Usuarios" }) => {
   const COLUMNS = [
     {
       Header: "Nombre",
-      accessor: "nombre_completo",
+      accessor: "nombre",
       Cell: (row) => {
         return (
           <div>
@@ -73,22 +72,15 @@ const TablaUsuarios = ({ title = "Usuarios" }) => {
     },
     
    {
-      Header: "RFC DEL OPERADOR",
-      accessor: "rfc",
+      Header: "Apellido",
+      accessor: "apellido",
       Cell: (row) => {
         return <span className="flex justify-center">{row?.cell?.value}</span>;
       },
     },
     {
-      Header: "Telefono",
-      accessor: "telefono",
-      Cell: (row) => {
-        return <span className="flex justify-center">{row?.cell?.value}</span>;
-      },
-    },
-    {
-      Header: "Telefono Secundario",
-      accessor: "telefono_2",
+      Header: "Correo electronico",
+      accessor: "email",
       Cell: (row) => {
         return <span className="flex justify-center">{row?.cell?.value}</span>;
       },
@@ -265,7 +257,7 @@ const TablaUsuarios = ({ title = "Usuarios" }) => {
                             <td
                               key={key}
                               {...restCellProps}
-                              className="table-td"
+                              className="p-4 text-center"
                             >
                               {cell.render("Cell")}
                             </td>

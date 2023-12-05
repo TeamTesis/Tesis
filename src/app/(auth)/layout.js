@@ -3,7 +3,7 @@
 import useRtl from "@/hooks/useRtl";
 import useDarkMode from "@/hooks/useDarkMode";
 import useSkin from "@/hooks/useSkin";
-
+import { ToastContainer } from "react-toastify";
 export default function AuthLayout({ children }) {
   const [isRtl] = useRtl();
   const [isDark] = useDarkMode();
@@ -16,6 +16,7 @@ export default function AuthLayout({ children }) {
           skin === "bordered" ? "skin--bordered" : "skin--default"
         }`}
       >
+        <ToastContainer />
         {children}
       </div>
     </>

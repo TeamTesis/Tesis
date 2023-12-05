@@ -1,5 +1,5 @@
 "use client"
-import TablaUnidades from "@/components/partials/table/TablaUnidades";
+import TablaUsuarios from "@/components/partials/table/TablaUsuarios";
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation"; 
 
@@ -19,7 +19,7 @@ function Unidades() {
             />
             </div>
             <div className=" space-y-5">
-                <TablaUnidades/>
+                <TablaUsuarios/>
             </div>
 
         </div>
